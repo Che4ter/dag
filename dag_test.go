@@ -20,7 +20,7 @@ package dag_test
 import (
 	"testing"
 
-	"github.com/goombaio/dag"
+	"github.com/Che4ter/dag"
 )
 
 func TestDAG(t *testing.T) {
@@ -493,5 +493,77 @@ func TestDAG_Predecessors_VertexNotFound(t *testing.T) {
 	predecessors, err := dag1.Predecessors(vertex3)
 	if err == nil {
 		t.Fatalf("Got %d predecessors for vertex %s, but expected to fail", len(predecessors), vertex3.ID)
+	}
+}
+
+func TestDAG_BFS(t *testing.T) {
+	dag1 := dag.NewDAG()
+
+	expected_children_count := 3
+
+	vertex1 := dag.NewVertex("1", nil)
+	vertex2 := dag.NewVertex("2", nil)
+	vertex3 := dag.NewVertex("3", nil)
+	vertex4 := dag.NewVertex("4", nil)
+
+	err := dag1.AddVertex(vertex1)
+	if err != nil {
+		t.Fatalf("Can't add vertex to DAG: %s", err)
+	}
+	err = dag1.AddVertex(vertex2)
+	if err != nil {
+		t.Fatalf("Can't add vertex to DAG: %s", err)
+	}
+	err = dag1.AddVertex(vertex3)
+	if err != nil {
+		t.Fatalf("Can't add vertex to DAG: %s", err)
+	}
+	err = dag1.AddVertex(vertex4)
+	if err != nil {
+		t.Fatalf("Can't add vertex to DAG: %s", err)
+	}
+
+	err = dag1.AddEdge(vertex1, vertex2)
+	if err != nil {
+		t.Fatalf("Can't add edge to DAG: %s", err)
+	}
+
+	err = dag1.AddEdge(vertex2, vertex3)
+	if err != nil {
+		t.Fatalf("Can't add edge to DAG: %s", err)
+	}
+
+	err = dag1.AddEdge(vertex2, vertex4)
+	if err != nil {
+		t.Fatalf("Can't add edge to DAG: %s", err)
+	}
+
+	vertexes, err := dag1.BFS(vertex1)
+	if err != nil {
+		t.Fatalf("BFS Search error: %s", err)
+	}
+
+	if len(vertexes) != expected_children_count {
+		t.Fatalf("Expected children count to be %d but got %d", expected_children_count, len(vertexes))
+	}
+}
+
+func TestDAG_VertexExists(t *testing.T) {
+	dag1 := dag.NewDAG()
+
+	vertex1 := dag.NewVertex("1", nil)
+	vertex2 := dag.NewVertex("2", nil)
+
+	err := dag1.AddVertex(vertex1)
+	if err != nil {
+		t.Fatalf("Can't add vertex to DAG: %s", err)
+	}
+
+	if !dag1.VertexExists(vertex1.ID) {
+		t.Fatalf("Expected vertex %s to be existend", vertex1)
+	}
+
+	if dag1.VertexExists(vertex2.ID) {
+		t.Fatalf("Expected vertex %s not to be existend", vertex2)
 	}
 }

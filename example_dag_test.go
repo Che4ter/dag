@@ -20,7 +20,7 @@ package dag_test
 import (
 	"fmt"
 
-	"github.com/goombaio/dag"
+	"github.com/Che4ter/dag"
 )
 
 func ExampleDAG_vertices() {

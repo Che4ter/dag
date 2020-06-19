@@ -12,3 +12,7 @@
 *.out
 
 .vscode
+
+# Jetbrains
+.idea/
+*.iml

@@ -18,6 +18,7 @@
 package dag
 
 import (
+	"container/list"
 	"fmt"
 	"sync"
 
@@ -223,4 +224,63 @@ func (d *DAG) String() string {
 	}
 
 	return result
+}
+
+// Prints an string representation of this instance, but hides the vertices values.
+func (d *DAG) StringNoValue() string {
+	result := fmt.Sprintf("DAG Vertices: %d - Edges: %d\n", d.Order(), d.Size())
+	result += fmt.Sprintf("Vertices:\n")
+	for _, vertex := range d.vertices.Values() {
+		vertex := vertex.(*Vertex)
+		result += fmt.Sprintf("%s", vertex.StringKeys())
+	}
+
+	return result
+}
+
+// BFS implements the Breadth-first algorithm to traversing all children of a given vertex, return vertices that are children of a given vertex.
+func (d *DAG) BFS(vertex *Vertex) ([]*Vertex, error) {
+	var result []*Vertex
+
+	//track the visited nodes
+	visited := make(map[string]*Vertex)
+
+	//queue of the nodes to visit
+	queue := list.New()
+	queue.PushBack(vertex)
+
+	//start with root node
+	visited[vertex.ID] = vertex
+
+	for queue.Len() > 0 {
+		qnode := queue.Front()
+
+		children, err := d.Successors(qnode.Value.(*Vertex))
+		if err != nil {
+			return nil, err
+		}
+		//iterate through all of its children
+		//make the visited nodes and add them to the result
+		for _, node := range children {
+			if _, ok := visited[node.ID]; !ok {
+				visited[node.ID] = node
+				result = append(result, node)
+				queue.PushBack(node)
+			}
+		}
+		queue.Remove(qnode)
+	}
+
+	return result, nil
+}
+
+// VertexExists return  true if a vertex with given vertex ID exists in the graph
+func (d *DAG) VertexExists(id interface{}) bool {
+	_, found := d.vertices.Get(id)
+	if found {
+		return true
+	} else {
+		return false
+	}
+
 }

@@ -67,3 +67,11 @@ func (v *Vertex) String() string {
 
 	return result
 }
+
+// String implements stringer interface and prints an string representation
+// of this instance.
+func (v *Vertex) StringKeys() string {
+	result := fmt.Sprintf("ID: %s - Parents: %d - Children: %d\n", v.ID, v.Parents.Size(), v.Children.Size())
+
+	return result
+}
